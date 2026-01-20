@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>To-Do List - Vue.js</title>
+  <!-- Load Vue 3 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      padding: 1%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+    main {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    input {
+      padding: 10px;
+      width: 70%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-right: 8px;
+    }
+    button {
+      padding: 9px 80px;
+      background: #42b883;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #359a6a;
+    }
+    .task-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .task-text {
+      margin-left: 10px;
+      flex: 1;
+    }
+    .task-text.done {
+      text-decoration: line-through;
+      color: #888;
+    }
+    .hapus-btn {
+      background: #ff6b6b !important;
+      padding: 6px 10px !important;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>📝 To-Do List</h1>
+      <p>{{ tasks.length }} tugas | {{ completedCount }} selesai</p>
+    </header>
+
+    <main>
+      <!-- Form Tambah Tugas -->
+      <div class="form-group">
+        <input 
+          v-model="newTask" 
+          @keyup.enter="addTask" 
+          placeholder="Tambah tugas baru..." 
+          type="text"
+        />
+        <button @click="addTask">➕ Tambah</button>
+      </div>
+
+      <!-- Daftar Tugas -->
+      <div v-if="tasks.length === 0" style="text-align: center; color: #888; margin-top: 20px;">
+        Belum ada tugas. Ayo mulai!
+      </div>
+
+      <div class="task-item" v-for="task in tasks" :key="task.id">
+        <input type="checkbox" v-model="task.done" />
+        <span class="task-text" :class="{ done: task.done }">{{ task.text }}</span>
+        <button class="hapus-btn" @click="removeTask(task.id)">🗑️</button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          newTask: '',
+          tasks: [
+            { id: 1, text: 'Pelajari HTML semantic', done: true },
+            { id: 2, text: 'Latihan JavaScript array', done: false }
+          ]
+        };
+      },
+      computed: {
+        completedCount() {
+          return this.tasks.filter(t => t.done).length;
+        }
+      },
+      methods: {
+        addTask() {
+          const text = this.newTask.trim();
+          if (text) {
+            const newId = this.tasks.length > 0 
+              ? Math.max(...this.tasks.map(t => t.id)) + 1 
+              : 1;
+            this.tasks.push({ id: newId, text, done: false });
+            this.newTask = '';
+          }
+        },
+        removeTask(id) {
+          this.tasks = this.tasks.filter(t => t.id !== id);
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
